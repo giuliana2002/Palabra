@@ -51,7 +51,7 @@ export default defineConfig(({ mode }) => {
       css: false,
       coverage: {
         provider: 'v8',
-        include: ['src/domain/**', 'src/store/**'],
+        include: ['src/domain/**', 'src/store/**', 'src/lib/**'],
         reporter: ['text', 'html'],
       },
     },

@@ -5,6 +5,8 @@
 
 export interface DictionaryEntry {
   word: string;
+  /** De dónde salen los datos (se muestra como atribución). */
+  source?: { name: string; url: string };
   phonetic?: string;
   audio?: string;
   meanings: Array<{
@@ -57,6 +59,7 @@ export interface SentenceExample {
 interface RawTatoebaSentence {
   text?: string;
   lang?: string;
+  is_direct?: boolean;
   translations?: unknown;
 }
 
@@ -73,9 +76,68 @@ export function parseTatoeba(payload: unknown): SentenceExample[] {
       const flat = Array.isArray(item.translations)
         ? (item.translations.flat(2) as RawTatoebaSentence[])
         : [];
-      const spanish = flat.find((t) => t?.lang === 'spa' && t.text);
+      // Se prefieren las traducciones directas (hechas de esa frase) a las indirectas.
+      const candidates = flat.filter((t) => t?.lang === 'spa' && t.text);
+      const spanish = candidates.find((t) => t.is_direct) ?? candidates[0];
       return spanish?.text ? { en: item.text, es: spanish.text } : { en: item.text };
     })
     .filter((x): x is SentenceExample => x !== null)
     .slice(0, 6);
+}
+
+/* ------------------------------------------------------------------ */
+/* Wiktionary (respaldo del diccionario)                               */
+/* ------------------------------------------------------------------ */
+
+const ENTITIES: Record<string, string> = {
+  amp: '&',
+  lt: '<',
+  gt: '>',
+  quot: '"',
+  '#39': "'",
+  nbsp: ' ',
+};
+
+/** Convierte el HTML de Wiktionary en texto plano (sin interpretarlo como HTML). */
+export function stripHtml(html: string): string {
+  return html
+    .replace(/<[^>]*>/g, '')
+    .replace(/&(amp|lt|gt|quot|#39|nbsp);/g, (_m, name: string) => ENTITIES[name] ?? '')
+    .replace(/&#(\d+);/g, (_m, code: string) => String.fromCharCode(Number(code)))
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
+interface RawWiktionaryUsage {
+  partOfSpeech?: string;
+  language?: string;
+  definitions?: Array<{ definition?: string; examples?: string[] }>;
+}
+
+export function parseWiktionary(payload: unknown, word: string): DictionaryEntry | null {
+  const usages = (payload as { en?: RawWiktionaryUsage[] } | null)?.en;
+  if (!Array.isArray(usages)) return null;
+  const meanings = usages
+    .map((usage) => ({
+      partOfSpeech: (usage.partOfSpeech ?? '').toLowerCase(),
+      synonyms: [] as string[],
+      definitions: (usage.definitions ?? [])
+        .map((d) => ({
+          definition: stripHtml(d.definition ?? ''),
+          example: d.examples?.[0] ? stripHtml(d.examples[0]) : undefined,
+        }))
+        .filter((d) => d.definition.length > 0)
+        .slice(0, 2),
+    }))
+    .filter((m) => m.definitions.length > 0)
+    .slice(0, 3);
+  if (meanings.length === 0) return null;
+  return {
+    word,
+    meanings,
+    source: {
+      name: 'Wiktionary',
+      url: `https://en.wiktionary.org/wiki/${encodeURIComponent(word)}`,
+    },
+  };
 }

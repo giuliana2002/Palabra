@@ -2,12 +2,8 @@ import { useEffect, useRef, useState, type FormEvent } from 'react';
 import { Icon } from '@/components/Icon';
 import { PageHeader } from '@/components/PageHeader';
 import { SpeakButton } from '@/components/SpeakButton';
-import {
-  parseDictionary,
-  parseTatoeba,
-  type DictionaryEntry,
-  type SentenceExample,
-} from '@/domain/api';
+import type { DictionaryEntry, SentenceExample } from '@/domain/api';
+import { lookupWord, searchSentences } from '@/lib/publicApis';
 import { cardId, useProgress } from '@/store/progress';
 
 type Status<T> =
@@ -16,32 +12,27 @@ type Status<T> =
   | { state: 'error'; message: string }
   | { state: 'done'; data: T };
 
-/** Hook genérico de petición con cancelación (AbortController) para evitar condiciones de carrera. */
-function useFetcher<T>(
-  parse: (payload: unknown) => T,
-  isEmpty: (data: T) => boolean,
-  emptyMessage: string,
-) {
+/** Ejecuta una petición cancelable: una búsqueda nueva cancela la anterior (sin condiciones de carrera). */
+function useAsync<T>() {
   const [status, setStatus] = useState<Status<T>>({ state: 'idle' });
   const controller = useRef<AbortController | null>(null);
   useEffect(() => () => controller.current?.abort(), []);
 
-  const run = async (url: string) => {
+  const run = async (task: (signal: AbortSignal) => Promise<T>) => {
     controller.current?.abort();
-    controller.current = new AbortController();
+    const current = new AbortController();
+    controller.current = current;
     setStatus({ state: 'loading' });
     try {
-      const response = await fetch(url, { signal: controller.current.signal });
-      if (response.status === 404) throw new Error(emptyMessage);
-      if (!response.ok) throw new Error(`El servicio respondió con un error (${response.status}).`);
-      const data = parse(await response.json());
-      if (isEmpty(data)) throw new Error(emptyMessage);
-      setStatus({ state: 'done', data });
+      const data = await task(current.signal);
+      if (!current.signal.aborted) setStatus({ state: 'done', data });
     } catch (error) {
-      if ((error as Error).name === 'AbortError') return;
+      if (current.signal.aborted) return;
       const message =
-        navigator.onLine === false ? 'Sin conexión a Internet.' : (error as Error).message;
-      setStatus({ state: 'error', message: message || 'No se pudo completar la búsqueda.' });
+        navigator.onLine === false
+          ? 'Sin conexión a Internet.'
+          : (error as Error).message || 'No se pudo completar la búsqueda.';
+      setStatus({ state: 'error', message });
     }
   };
   return { status, run };
@@ -52,32 +43,18 @@ export function ResourcesPage() {
   const [phrase, setPhrase] = useState('');
   const cards = useProgress((s) => s.cards);
   const addCard = useProgress((s) => s.addCard);
-  const dictionary = useFetcher<DictionaryEntry | null>(
-    parseDictionary,
-    (d) => d === null,
-    'No se encontró esa palabra en el diccionario.',
-  );
-  const examples = useFetcher<SentenceExample[]>(
-    parseTatoeba,
-    (d) => d.length === 0,
-    'No hay ejemplos para esa búsqueda.',
-  );
+  const dictionary = useAsync<DictionaryEntry>();
+  const examples = useAsync<SentenceExample[]>();
 
   const searchWord = (e: FormEvent) => {
     e.preventDefault();
     const q = word.trim();
-    if (q)
-      void dictionary.run(
-        `https://api.dictionaryapi.dev/api/v2/entries/en/${encodeURIComponent(q)}`,
-      );
+    if (q) void dictionary.run((signal) => lookupWord(q, signal));
   };
   const searchExamples = (e: FormEvent) => {
     e.preventDefault();
     const q = phrase.trim();
-    if (q)
-      void examples.run(
-        `https://api.tatoeba.org/v1/sentences?lang=eng&q=${encodeURIComponent(q)}&showtrans=spa&sort=relevance&limit=6`,
-      );
+    if (q) void examples.run((signal) => searchSentences(q, signal));
   };
 
   const entry = dictionary.status.state === 'done' ? dictionary.status.data : null;
@@ -87,7 +64,7 @@ export function ResourcesPage() {
       <PageHeader
         eyebrow="Fuentes abiertas"
         title="Diccionario y ejemplos reales"
-        lead="Consulta definiciones y pronunciación (Free Dictionary API) y frases auténticas con traducción (Tatoeba). Necesita conexión."
+        lead="Consulta definiciones y pronunciación (Free Dictionary API, con Wiktionary como respaldo) y frases auténticas con traducción (Tatoeba). Necesita conexión."
       />
       <div className="resources">
         <section className="panel">
@@ -155,6 +132,14 @@ export function ResourcesPage() {
                   )}
                 </div>
               ))}
+              {entry.source && (
+                <p className="muted small">
+                  Fuente:{' '}
+                  <a href={entry.source.url} target="_blank" rel="noreferrer">
+                    {entry.source.name}
+                  </a>
+                </p>
+              )}
             </article>
           )}
         </section>
@@ -187,6 +172,15 @@ export function ResourcesPage() {
                 </li>
               ))}
             </ul>
+          )}
+          {examples.status.state === 'done' && (
+            <p className="muted small">
+              Fuente:{' '}
+              <a href="https://tatoeba.org/" target="_blank" rel="noreferrer">
+                Tatoeba
+              </a>{' '}
+              (CC BY 2.0 FR)
+            </p>
           )}
         </section>
       </div>

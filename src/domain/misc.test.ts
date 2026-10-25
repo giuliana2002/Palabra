@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { parseDictionary, parseTatoeba } from './api';
+import { parseDictionary, parseTatoeba, parseWiktionary, stripHtml } from './api';
 import { analyzeLyrics, tagWord } from './lyrics';
 import { parseRichText } from './richText';
 
@@ -78,5 +78,46 @@ describe('parsers de APIs', () => {
       { en: 'I like to travel.', es: 'Me gusta viajar.' },
       { en: 'Travel is fun.' },
     ]);
+  });
+
+  it('prefiere la traducción directa al español (formato real de Tatoeba v1)', () => {
+    const payload = {
+      data: [
+        {
+          text: 'I traveled.',
+          translations: [
+            { text: 'Estaba viajando.', lang: 'spa', is_direct: false },
+            { text: 'Viajé.', lang: 'spa', is_direct: true },
+          ],
+        },
+      ],
+    };
+    expect(parseTatoeba(payload)).toEqual([{ en: 'I traveled.', es: 'Viajé.' }]);
+  });
+
+  it('convierte el HTML de Wiktionary en texto plano', () => {
+    expect(
+      stripHtml('<span class="x"></span> To <a href="/wiki/pass">pass</a> &amp; go&#39;s'),
+    ).toBe("To pass & go's");
+  });
+
+  it('lee las definiciones de Wiktionary y descarta las vacías', () => {
+    const entry = parseWiktionary(
+      {
+        en: [
+          {
+            partOfSpeech: 'Noun',
+            definitions: [{ definition: '<span></span>' }, { definition: 'A <b>trip</b>.' }],
+          },
+        ],
+      },
+      'travel',
+    );
+    expect(entry?.meanings[0]).toEqual({
+      partOfSpeech: 'noun',
+      synonyms: [],
+      definitions: [{ definition: 'A trip.', example: undefined }],
+    });
+    expect(parseWiktionary({ other: [] }, 'x')).toBeNull();
   });
 });
