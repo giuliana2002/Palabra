@@ -20,6 +20,8 @@ const PhrasesPage = page(() => import('@/features/phrases/PhrasesPage'), 'Phrase
 const TheoryPage = page(() => import('@/features/theory/TheoryPage'), 'TheoryPage');
 const SongsPage = page(() => import('@/features/songs/SongsPage'), 'SongsPage');
 const ResourcesPage = page(() => import('@/features/resources/ResourcesPage'), 'ResourcesPage');
+const SessionPage = page(() => import('@/features/session/SessionPage'), 'SessionPage');
+const ExamPage = page(() => import('@/features/exam/ExamPage'), 'ExamPage');
 const SettingsPage = page(() => import('@/features/settings/SettingsPage'), 'SettingsPage');
 
 // HashRouter: funciona en GitHub Pages sin configuración de servidor.
@@ -29,6 +31,8 @@ export const routes: RouteObject[] = [
     element: <Layout />,
     children: [
       { index: true, element: <HomePage /> },
+      { path: 'sesion', element: <SessionPage /> },
+      { path: 'examen/:week', element: <ExamPage /> },
       { path: 'ruta', element: <RoutePage /> },
       { path: 'ruta/:day', element: <DayPage /> },
       { path: 'repaso', element: <ReviewPage /> },

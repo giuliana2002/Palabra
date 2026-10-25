@@ -699,6 +699,7 @@ hr {
 }
 
 .ring {
+  flex: none;
   --size: 104px;
   --value: 0;
   width: var(--size);
@@ -1979,5 +1980,268 @@ hr {
   *::after {
     transition: none !important;
     scroll-behavior: auto !important;
+  }
+}
+
+/* ---------- Sesión guiada, tests y exámenes ---------- */
+.panel__actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.6rem 1rem;
+  margin-top: auto;
+  padding-top: 0.75rem;
+}
+
+.panel__actions .button {
+  margin-top: 0 !important;
+}
+
+.link--light {
+  color: #dbe7e3;
+  font-size: 0.92rem;
+}
+
+.session-steps {
+  list-style: none;
+  padding: 0;
+  margin: 0.25rem 0 0.5rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+}
+
+.session-steps li {
+  font-size: 0.82rem;
+  font-weight: 600;
+  padding: 0.2rem 0.6rem;
+  border-radius: 999px;
+  background: rgb(255 255 255 / 10%);
+  color: #e4ece9;
+}
+
+.stepper {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 1.5rem;
+  display: flex;
+  gap: 0.5rem;
+  counter-reset: none;
+}
+
+.stepper__item {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding-top: 0.6rem;
+  border-top: 4px solid var(--line);
+  color: var(--muted);
+  font-size: 0.88rem;
+  font-weight: 600;
+  min-width: 0;
+}
+
+.stepper__dot {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 1.6rem;
+  height: 1.6rem;
+  border-radius: 50%;
+  border: 1px solid var(--line);
+  background: var(--surface);
+  font-size: 0.8rem;
+}
+
+.stepper__item--done {
+  border-top-color: var(--lime-strong);
+}
+
+.stepper__item--done .stepper__dot {
+  background: var(--lime);
+  border-color: var(--lime-strong);
+  color: var(--on-lime);
+}
+
+.stepper__item--current {
+  border-top-color: var(--ink);
+  color: var(--ink);
+}
+
+.stepper__item--current .stepper__dot {
+  background: var(--ink);
+  border-color: var(--ink);
+  color: var(--paper);
+}
+
+.step-intro {
+  max-width: 68ch;
+  color: var(--muted);
+  margin-bottom: 1rem;
+}
+
+.step-intro strong {
+  color: var(--ink);
+}
+
+.quiz,
+.practice {
+  max-width: 680px;
+  margin: 0 auto;
+  display: grid;
+  gap: 0.9rem;
+}
+
+.quiz__card {
+  display: grid;
+  gap: 0.8rem;
+  padding: 1.4rem 1.5rem;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+}
+
+.quiz__prompt {
+  font-weight: 600;
+  font-size: 1.05rem;
+  margin: 0;
+}
+
+.quiz__context {
+  margin: 0;
+  font: 700 clamp(1.5rem, 3.5vw, 2rem) / 1.25 var(--font-serif);
+}
+
+.option kbd {
+  margin-right: 0.4rem;
+}
+
+.task__actions--start {
+  justify-content: flex-start;
+}
+
+.result {
+  max-width: 760px;
+  margin: 0 auto;
+  display: grid;
+  gap: 1.25rem;
+  padding: 1.5rem;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+}
+
+.result__head {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+}
+
+.result__head h2 {
+  margin-bottom: 0.25rem;
+}
+
+.result .kpis {
+  margin: 0;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.ring--warn {
+  background:
+    radial-gradient(closest-side, var(--surface) 78%, transparent 80% 100%),
+    conic-gradient(var(--coral) calc(var(--value) * 1%), var(--surface-2) 0);
+}
+
+.tags {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.tags li {
+  padding: 0.3rem 0.65rem;
+  border-radius: var(--radius-sm);
+  background: var(--ko-bg);
+  font-size: 0.9rem;
+}
+
+.exam-intro {
+  display: grid;
+  grid-template-columns: 1.4fr 1fr;
+  gap: 1rem;
+  align-items: start;
+}
+
+.exam-intro .panel:last-child {
+  display: grid;
+  justify-items: start;
+  gap: 0.5rem;
+}
+
+.exam-intro__days {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  columns: 2;
+  font-size: 0.92rem;
+}
+
+.exam-intro__days li {
+  padding: 0.2rem 0;
+  break-inside: avoid;
+}
+
+.day-card--exam {
+  background: var(--ink-soft);
+  border-color: var(--ink-soft);
+  color: #eef3ef;
+}
+
+.day-card--exam .day-card__meta {
+  color: #b9cbc7;
+}
+
+.day-card--exam .day-card__number {
+  color: var(--lime);
+}
+
+.day-card--exam.day-card--done {
+  background: var(--ink-soft);
+  outline: 3px solid var(--lime-strong);
+  outline-offset: -3px;
+}
+
+@media (max-width: 900px) {
+  .exam-intro {
+    grid-template-columns: 1fr;
+  }
+
+  .stepper__label {
+    display: none;
+  }
+
+  .stepper__item--current .stepper__label {
+    display: inline;
+  }
+}
+
+@media (max-width: 600px) {
+  .result .kpis {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .result__head {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .exam-intro__days {
+    columns: 1;
   }
 }

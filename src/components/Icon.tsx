@@ -24,6 +24,7 @@ const PATHS = {
   download: 'M12 4v11m-5-5 5 5 5-5M5 20h14',
   upload: 'M12 20V9m-5 5 5-5 5 5M5 4h14',
   refresh: 'M20 11a8 8 0 1 0-2.3 5.7M20 4v7h-7',
+  exam: 'M9 3h6v3H9zM7 4.5H5V21h14V4.5h-2M8.5 12l2 2 4-4M8.5 17.5h7',
   lightbulb:
     'M9 18h6m-5 3h4M12 3a6 6 0 0 0-3.5 10.9c.6.5 1 1.2 1 2.1h5c0-.9.4-1.6 1-2.1A6 6 0 0 0 12 3z',
 } as const;

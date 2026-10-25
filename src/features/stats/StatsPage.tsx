@@ -20,7 +20,11 @@ export function StatsPage() {
   const all = Object.values(results);
   const correct = all.filter((r) => r.ok).length;
   const counts = answeredByDay(results);
-  const completedDays = DAYS.filter((d) => (counts.get(d.id) ?? 0) >= EXERCISES_PER_DAY).length;
+  const sessions = useProgress((s) => s.sessions);
+  const sessionDays = new Set(Object.values(sessions).map((r) => r.day));
+  const completedDays = DAYS.filter(
+    (d) => sessionDays.has(d.id) || (counts.get(d.id) ?? 0) >= EXERCISES_PER_DAY,
+  ).length;
   const mastered = Object.values(cards).filter(isMastered).length;
   const series = activitySeries(activity, today, 14);
   const byKind = accuracyByKind(all);

@@ -10,6 +10,7 @@ import { Icon, type IconName } from './Icon';
 
 const NAV: Array<{ to: string; label: string; icon: IconName; end?: boolean }> = [
   { to: '/', label: 'Hoy', icon: 'home', end: true },
+  { to: '/sesion', label: 'Sesión guiada', icon: 'play' },
   { to: '/ruta', label: 'Ruta de 31 días', icon: 'route' },
   { to: '/repaso', label: 'Repaso', icon: 'review' },
   { to: '/pronunciacion', label: 'Pronunciación', icon: 'mic' },
