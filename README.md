@@ -4,14 +4,14 @@
 
 **Aprende inglés en 31 días: práctica diaria, repaso espaciado y pronunciación con reconocimiento de voz.**
 
-[![CI](https://github.com/TU_USUARIO/palabra/actions/workflows/ci.yml/badge.svg)](https://github.com/TU_USUARIO/palabra/actions/workflows/ci.yml)
-[![Deploy](https://github.com/TU_USUARIO/palabra/actions/workflows/deploy.yml/badge.svg)](https://github.com/TU_USUARIO/palabra/actions/workflows/deploy.yml)
+[![CI](https://github.com/giuliana2002/Palabra/actions/workflows/ci.yml/badge.svg)](https://github.com/giuliana2002/Palabra/actions/workflows/ci.yml)
+[![Deploy](https://github.com/giuliana2002/Palabra/actions/workflows/deploy.yml/badge.svg)](https://github.com/giuliana2002/Palabra/actions/workflows/deploy.yml)
 ![React](https://img.shields.io/badge/React-18-61dafb?logo=react&logoColor=white)
 ![TypeScript](https://img.shields.io/badge/TypeScript-strict-3178c6?logo=typescript&logoColor=white)
 ![Tests](https://img.shields.io/badge/tests-140%20passing-cbea72)
 ![License](https://img.shields.io/badge/license-MIT-102834)
 
-[**Ver demo**](https://TU_USUARIO.github.io/palabra/) · [Funcionalidades](#funcionalidades) · [Arquitectura](#arquitectura) · [Decisiones técnicas](#decisiones-técnicas) · [Ejecutar en local](#ejecutar-en-local)
+[**Ver demo**](https://giuliana2002.github.io/Palabra/) · [Funcionalidades](#funcionalidades) · [Arquitectura](#arquitectura) · [Decisiones técnicas](#decisiones-técnicas) · [Ejecutar en local](#ejecutar-en-local)
 
 ![Panel de inicio de Palabra](docs/screenshots/inicio.png)
 
@@ -147,8 +147,8 @@ La integración continua ejecuta formato, lint, tipos, tests con cobertura y bui
 Requisitos: Node.js 20 o superior.
 
 ```bash
-git clone https://github.com/TU_USUARIO/palabra.git
-cd palabra
+git clone https://github.com/giuliana2002/Palabra.git
+cd Palabra
 npm install
 npm run dev        # http://localhost:5173
 ```
@@ -157,9 +157,8 @@ npm run dev        # http://localhost:5173
 
 ## Despliegue
 
-1. Sube el repositorio a GitHub con el nombre `palabra`.
-2. En **Settings → Pages**, elige **Source: GitHub Actions**.
-3. El workflow `deploy.yml` publica la app en `https://TU_USUARIO.github.io/palabra/` en cada push a `main`.
+1. En **Settings → Pages** del repositorio, elige **Source: GitHub Actions**.
+2. Cada push a `main` ejecuta los tests y el workflow `deploy.yml` publica la app en `https://giuliana2002.github.io/Palabra/`.
 
 ## Qué cambió respecto a la primera versión
 
