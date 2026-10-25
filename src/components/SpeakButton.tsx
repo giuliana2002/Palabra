@@ -8,16 +8,20 @@ interface Props {
   compact?: boolean;
 }
 
+const MISSING = 'No hay ninguna voz en inglés instalada. Mira el aviso de arriba para activarla.';
+
 export function SpeakButton({ text, label = 'Escuchar', slow = false, compact = false }: Props) {
-  const { supported, speak } = useSpeech();
-  if (!supported) return null;
+  const { status, speak } = useSpeech();
+  if (status === 'unsupported') return null;
+  const missing = status === 'missing';
   return (
     <button
       type="button"
       className={compact ? 'icon-button' : 'button button--ghost'}
       onClick={() => speak(text, slow ? { rate: 0.65 } : {})}
+      disabled={missing}
       aria-label={compact ? `${label}: ${text}` : undefined}
-      title={compact ? label : undefined}
+      title={missing ? MISSING : compact ? label : undefined}
     >
       <Icon name="play" size={compact ? 16 : 18} />
       {!compact && <span>{label}</span>}

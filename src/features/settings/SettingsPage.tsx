@@ -1,6 +1,7 @@
 import { useRef, useState } from 'react';
 import { Icon } from '@/components/Icon';
 import { PageHeader } from '@/components/PageHeader';
+import { VoiceInstructions } from '@/components/VoiceHelp';
 import { useSpeech } from '@/hooks/useSpeech';
 import { exportBackup, parseBackup, useProgress, type Theme } from '@/store/progress';
 
@@ -9,7 +10,7 @@ export function SettingsPage() {
   const update = useProgress((s) => s.updateSettings);
   const importData = useProgress((s) => s.importData);
   const resetAll = useProgress((s) => s.resetAll);
-  const { voices, speak, supported } = useSpeech();
+  const { voices, voice, speak, supported, status } = useSpeech();
   const fileInput = useRef<HTMLInputElement>(null);
   const [message, setMessage] = useState<{ ok: boolean; text: string } | null>(null);
   const [confirmReset, setConfirmReset] = useState(false);
@@ -82,16 +83,27 @@ export function SettingsPage() {
           <h2 className="panel__title">Voz</h2>
           {!supported ? (
             <p className="muted">Este navegador no permite síntesis de voz.</p>
+          ) : status === 'missing' ? (
+            <>
+              <p>
+                <strong>No hay ninguna voz en inglés instalada.</strong> El audio está desactivado
+                para no enseñarte una pronunciación incorrecta con la voz española.
+              </p>
+              <VoiceInstructions />
+            </>
           ) : (
             <>
               <label className="field">
-                <span>Voz en inglés ({voices.length} disponibles)</span>
+                <span>
+                  Voz en inglés ({voices.length} disponibles)
+                  {voice && <span className="muted"> · en uso: {voice.name}</span>}
+                </span>
                 <select
                   className="input"
                   value={settings.voiceURI ?? ''}
                   onChange={(e) => update({ voiceURI: e.target.value || null })}
                 >
-                  <option value="">Automática</option>
+                  <option value="">Automática (la de mejor calidad)</option>
                   {voices.map((v) => (
                     <option key={v.voiceURI} value={v.voiceURI}>
                       {v.name} ({v.lang})

@@ -8,7 +8,7 @@
 [![Deploy](https://github.com/giuliana2002/Palabra/actions/workflows/deploy.yml/badge.svg)](https://github.com/giuliana2002/Palabra/actions/workflows/deploy.yml)
 ![React](https://img.shields.io/badge/React-18-61dafb?logo=react&logoColor=white)
 ![TypeScript](https://img.shields.io/badge/TypeScript-strict-3178c6?logo=typescript&logoColor=white)
-![Tests](https://img.shields.io/badge/tests-149%20passing-cbea72)
+![Tests](https://img.shields.io/badge/tests-154%20passing-cbea72)
 ![License](https://img.shields.io/badge/license-MIT-102834)
 
 [**Ver demo**](https://giuliana2002.github.io/Palabra/) · [Funcionalidades](#funcionalidades) · [Arquitectura](#arquitectura) · [Decisiones técnicas](#decisiones-técnicas) · [Ejecutar en local](#ejecutar-en-local)
@@ -128,6 +128,7 @@ La regla principal es que **el dominio no conoce React**. Los componentes solo o
 - **Rendimiento.** Cada pantalla se carga bajo demanda con `React.lazy` y los ejercicios de cada día se memorizan. El bundle inicial pesa unos 95 kB en gzip.
 - **Tests y exámenes deterministas.** El test diario usa como semilla la fecha y los exámenes el número de intento: el mismo test es reproducible (útil para depurar y testear), pero cada día y cada intento traen preguntas distintas.
 - **Migraciones del estado guardado.** El store está versionado (`STORE_VERSION`) y `migrateProgress` actualiza los datos antiguos sin perder el progreso. Está cubierto por tests.
+- **La voz nunca habla inglés con acento español.** En un Windows en español sin voces inglesas, el navegador lee el inglés con la voz española, y eso enseña una pronunciación incorrecta. Palabra solo habla con voces inglesas: elige la de mejor calidad (neuronales/online primero) y, si no hay ninguna, desactiva el audio, explica cómo instalar una según el sistema operativo y muestra el texto en los ejercicios de escucha.
 - **APIs externas con respaldo.** Free Dictionary API ha tenido caídas y certificados caducados, así que el diccionario la consulta con un tiempo límite de 5 s y, si falla, usa el API REST de Wiktionary. Las peticiones se cancelan con `AbortController` cuando se lanza otra búsqueda, y los parsers (incluido convertir el HTML de Wiktionary en texto sin usar `innerHTML`) están testeados con respuestas reales.
 - **HashRouter** para que el despliegue en GitHub Pages funcione sin configurar el servidor.
 - **Accesibilidad.** HTML semántico, roles ARIA en pestañas y feedback, `lang="en"` en el texto inglés (los lectores de pantalla lo pronuncian bien), foco visible, enlace para saltar al contenido, `prefers-reduced-motion` y linting con `eslint-plugin-jsx-a11y`.
@@ -135,7 +136,7 @@ La regla principal es que **el dominio no conoce React**. Los componentes solo o
 ## Calidad
 
 ```bash
-npm test            # 149 tests (Vitest + Testing Library)
+npm test            # 154 tests (Vitest + Testing Library)
 npm run coverage    # ~98 % de líneas en src/domain
 npm run lint        # ESLint (typescript-eslint, react-hooks, jsx-a11y)
 npm run typecheck   # TypeScript estricto con noUncheckedIndexedAccess

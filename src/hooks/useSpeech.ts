@@ -1,46 +1,37 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useState, useSyncExternalStore } from 'react';
+import { englishVoices, pickEnglishVoice, voiceStatus } from '@/domain/voices';
+import { getVoicesSnapshot, isSpeechSupported, subscribeVoices } from '@/lib/voices';
 import { useProgress } from '@/store/progress';
 
-/** Síntesis de voz con la voz inglesa elegida en ajustes (o la mejor disponible). */
-export function useSpeech() {
-  const supported = typeof window !== 'undefined' && 'speechSynthesis' in window;
-  const { voiceURI, rate } = useProgress((s) => s.settings);
-  const [voices, setVoices] = useState<SpeechSynthesisVoice[]>([]);
-  const [speaking, setSpeaking] = useState(false);
+const EMPTY = { voices: [] as SpeechSynthesisVoice[], settled: false };
 
-  useEffect(() => {
-    if (!supported) return;
-    const load = () =>
-      setVoices(speechSynthesis.getVoices().filter((v) => v.lang.toLowerCase().startsWith('en')));
-    load();
-    speechSynthesis.addEventListener('voiceschanged', load);
-    return () => speechSynthesis.removeEventListener('voiceschanged', load);
-  }, [supported]);
+/**
+ * Síntesis de voz en inglés. Si el sistema no tiene ninguna voz inglesa, NO habla
+ * (leería el inglés con acento español) y `status` vale "missing" para avisar al usuario.
+ */
+export function useSpeech() {
+  const supported = isSpeechSupported();
+  const { voiceURI, rate } = useProgress((s) => s.settings);
+  const { voices, settled } = useSyncExternalStore(subscribeVoices, getVoicesSnapshot, () => EMPTY);
+  const [speaking, setSpeaking] = useState(false);
+  const status = voiceStatus(voices, settled, supported);
+  const voice = pickEnglishVoice(voices, voiceURI);
 
   const speak = useCallback(
-    (text: string, options: { rate?: number } = {}) => {
-      if (!supported || !text.trim()) return;
-      speechSynthesis.cancel();
+    (text: string, options: { rate?: number } = {}): boolean => {
+      if (!supported || !text.trim() || !voice) return false;
+      window.speechSynthesis.cancel();
       const utterance = new SpeechSynthesisUtterance(text);
-      const voice = voices.find((v) => v.voiceURI === voiceURI) ?? pickDefaultVoice(voices);
-      if (voice) utterance.voice = voice;
-      utterance.lang = voice?.lang ?? 'en-US';
+      utterance.voice = voice;
+      utterance.lang = voice.lang;
       utterance.rate = options.rate ?? rate;
       utterance.onstart = () => setSpeaking(true);
       utterance.onend = utterance.onerror = () => setSpeaking(false);
-      speechSynthesis.speak(utterance);
+      window.speechSynthesis.speak(utterance);
+      return true;
     },
-    [supported, voices, voiceURI, rate],
+    [supported, voice, rate],
   );
 
-  return { supported, voices, speak, speaking };
-}
-
-function pickDefaultVoice(voices: SpeechSynthesisVoice[]): SpeechSynthesisVoice | undefined {
-  return (
-    voices.find((v) => /natural|neural|google/i.test(v.name) && v.lang.startsWith('en-')) ??
-    voices.find((v) => v.lang === 'en-US') ??
-    voices.find((v) => v.lang === 'en-GB') ??
-    voices[0]
-  );
+  return { supported, status, voice, voices: englishVoices(voices), speak, speaking };
 }

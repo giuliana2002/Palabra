@@ -1,4 +1,6 @@
+import { NoVoiceFallback } from '@/components/NoVoiceFallback';
 import { SpeakButton } from '@/components/SpeakButton';
+import { useSpeech } from '@/hooks/useSpeech';
 import type { ChoiceExercise } from '@/domain/types';
 import { Feedback } from './Feedback';
 import { useExerciseResult } from './useExerciseResult';
@@ -6,11 +8,13 @@ import { useExerciseResult } from './useExerciseResult';
 export function ChoiceCard({ exercise }: { exercise: ChoiceExercise }) {
   const { result, answer } = useExerciseResult(exercise);
   const answered = Boolean(result);
+  const noVoice = useSpeech().status === 'missing';
 
   return (
     <>
       <p className="task__prompt">{exercise.prompt}</p>
-      {exercise.audio && (
+      {exercise.audio && noVoice && <NoVoiceFallback text={exercise.audio} />}
+      {exercise.audio && !noVoice && (
         <div className="task__audio">
           <SpeakButton text={exercise.audio} label="Escuchar" />
           <SpeakButton text={exercise.audio} label="Más despacio" slow />

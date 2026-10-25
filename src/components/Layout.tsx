@@ -7,6 +7,7 @@ import { usePrefersDark } from '@/hooks/usePrefersDark';
 import { useTheme } from '@/hooks/useTheme';
 import { useProgress } from '@/store/progress';
 import { Icon, type IconName } from './Icon';
+import { VoiceBanner } from './VoiceHelp';
 
 const NAV: Array<{ to: string; label: string; icon: IconName; end?: boolean }> = [
   { to: '/', label: 'Hoy', icon: 'home', end: true },
@@ -78,6 +79,7 @@ export function Layout() {
         </nav>
       </aside>
       <main id="contenido" className="main" tabIndex={-1}>
+        <VoiceBanner />
         <Suspense fallback={<p className="muted">Cargando…</p>}>
           <Outlet />
         </Suspense>

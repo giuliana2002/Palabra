@@ -514,6 +514,11 @@ hr {
   border-color: var(--ink);
 }
 
+.icon-button:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
 .icon-button--on {
   background: var(--lime);
   border-color: var(--lime-strong);
@@ -2244,4 +2249,27 @@ hr {
   .exam-intro__days {
     columns: 1;
   }
+}
+
+/* ---------- Aviso de voz ---------- */
+.voice-help {
+  align-items: flex-start;
+}
+
+.voice-help > div {
+  flex: 1;
+  min-width: 14rem;
+}
+
+.voice-help p {
+  margin: 0 0 0.4rem;
+}
+
+.voice-help__steps {
+  margin: 0 0 0.4rem;
+  padding-left: 1.2rem;
+}
+
+.voice-help .icon-button {
+  background: transparent;
 }

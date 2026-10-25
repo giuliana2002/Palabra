@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { Icon } from '@/components/Icon';
 import { ProgressBar } from '@/components/ProgressBar';
+import { NoVoiceFallback } from '@/components/NoVoiceFallback';
 import { SpeakButton } from '@/components/SpeakButton';
 import type { QuizQuestion } from '@/domain/quiz';
 import { useSpeech } from '@/hooks/useSpeech';
@@ -27,7 +28,8 @@ export function QuizRunner({
   const [index, setIndex] = useState(0);
   const [answers, setAnswers] = useState<Record<string, string>>({});
   const nextButton = useRef<HTMLButtonElement>(null);
-  const { speak } = useSpeech();
+  const { speak, status } = useSpeech();
+  const noVoice = status === 'missing';
   const speakRef = useRef(speak);
   speakRef.current = speak;
   const question = questions[index];
@@ -92,7 +94,10 @@ export function QuizRunner({
             {question.context}
           </p>
         )}
-        {question.audio && (
+        {question.audio && noVoice && question.audioOnly && (
+          <NoVoiceFallback text={question.audio} />
+        )}
+        {question.audio && !noVoice && (
           <div className="task__audio">
             <SpeakButton
               text={question.audio}
