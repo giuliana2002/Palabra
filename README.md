@@ -8,7 +8,7 @@
 [![Deploy](https://github.com/TU_USUARIO/palabra/actions/workflows/deploy.yml/badge.svg)](https://github.com/TU_USUARIO/palabra/actions/workflows/deploy.yml)
 ![React](https://img.shields.io/badge/React-18-61dafb?logo=react&logoColor=white)
 ![TypeScript](https://img.shields.io/badge/TypeScript-strict-3178c6?logo=typescript&logoColor=white)
-![Tests](https://img.shields.io/badge/tests-112%20passing-cbea72)
+![Tests](https://img.shields.io/badge/tests-140%20passing-cbea72)
 ![License](https://img.shields.io/badge/license-MIT-102834)
 
 [**Ver demo**](https://TU_USUARIO.github.io/palabra/) · [Funcionalidades](#funcionalidades) · [Arquitectura](#arquitectura) · [Decisiones técnicas](#decisiones-técnicas) · [Ejecutar en local](#ejecutar-en-local)
@@ -25,25 +25,34 @@ Palabra es una aplicación web (PWA) para hispanohablantes que empiezan con el i
 2. **Repaso espaciado**: cada palabra trabajada entra en un mazo que se programa con el algoritmo **SM-2**.
 3. **Producción oral**: el reconocimiento de voz compara palabra a palabra lo que dices con la frase modelo.
 
+**Cómo se usa en 30 días:** una sesión guiada al día de unos 25 minutos (repaso, palabras nuevas, ejercicios y hablar en voz alta) y un examen al final de cada semana. Las 90 actividades de cada día quedan como práctica extra.
+
 Funciona sin servidor y sin registro: el progreso se guarda en el navegador y se puede exportar o importar en JSON.
 
 ## Funcionalidades
 
-|                                   |                                                                                                                                                                                                                            |
-| --------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Ruta de 31 días**               | 15 conceptos nuevos al día (465 en total), cada uno con su frase de ejemplo, y 6 tipos de actividad: significado en contexto, construir frases, corregir errores, responder en diálogo, escucha activa y producción libre. |
-| **Repaso espaciado (SM-2)**       | Lo que fallas vuelve hoy; lo que aciertas, cuando estás a punto de olvidarlo. Tarjetas con atajos de teclado (`Espacio`, `1`–`4`) y vista previa del próximo intervalo.                                                    |
-| **Pronunciación**                 | Web Speech API con alineación palabra a palabra (programación dinámica + Levenshtein) que marca qué palabras no se entendieron y da una puntuación.                                                                        |
-| **Escucha con pares mínimos**     | Los distractores se diferencian en una sola palabra (_is/was_, _he/she_, _can/can't_…) para entrenar el oído de verdad.                                                                                                    |
-| **Cuaderno de errores**           | Cada fallo se guarda con tu respuesta, la correcta y la explicación gramatical.                                                                                                                                            |
-| **Estadísticas**                  | Racha actual y récord, precisión por tipo de actividad, actividad de los últimos 14 días y mapa de la ruta.                                                                                                                |
-| **Teoría A0 → B1**                | Manual integrado; cada día enlaza con su sección.                                                                                                                                                                          |
-| **Vocabulario y frases**          | Unos 700 conceptos con buscador y 1.200 frases en tres niveles, con audio y botón para añadirlos al repaso.                                                                                                                |
-| **Laboratorio de canciones**      | Pegas un fragmento y se marcan pronombres, verbos, conectores y contracciones, y se detecta el estribillo.                                                                                                                 |
-| **Diccionario y ejemplos reales** | Free Dictionary API (definición, fonética y audio nativo) y Tatoeba (frases reales con traducción).                                                                                                                        |
-| **PWA**                           | Instalable y usable sin conexión (excepto diccionario y reconocimiento de voz). Modo oscuro, diseño responsive y accesible con teclado.                                                                                    |
+|                                   |                                                                                                                                                                                                                                                                  |
+| --------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Sesión guiada diaria**          | Un solo botón encadena 5 pasos en unos 25 minutos: calentamiento (test de repaso), 15 palabras nuevas, 12 ejercicios (2 de cada tipo, priorizando los no hechos), 3 frases para decir en voz alta y un resumen. Al completarla, la ruta avanza al día siguiente. |
+| **Test diario de repaso**         | 10 preguntas con vocabulario de días anteriores (inglés→español, español→inglés y escucha). Prioriza las tarjetas que vencen y las falladas, evita repetir lo ya repasado hoy y cada respuesta actualiza el SM-2.                                                |
+| **Exámenes semanales**            | Después de los días 7, 14, 21 y 30: 20 preguntas nuevas en cada intento (vocabulario, gramática, comprensión oral y comunicación). Nota, aprobado con un 70 %, desglose por habilidad, y las palabras falladas pasan al repaso.                                  |
+| **Ruta de 31 días**               | 15 conceptos nuevos al día (465 en total), cada uno con su frase de ejemplo, y 6 tipos de actividad: significado en contexto, construir frases, corregir errores, responder en diálogo, escucha activa y producción libre.                                       |
+| **Repaso espaciado (SM-2)**       | Lo que fallas vuelve hoy; lo que aciertas, cuando estás a punto de olvidarlo. Tarjetas con atajos de teclado (`Espacio`, `1`–`4`) y vista previa del próximo intervalo.                                                                                          |
+| **Pronunciación**                 | Web Speech API con alineación palabra a palabra (programación dinámica + Levenshtein) que marca qué palabras no se entendieron y da una puntuación.                                                                                                              |
+| **Escucha con pares mínimos**     | Los distractores se diferencian en una sola palabra (_is/was_, _he/she_, _can/can't_…) para entrenar el oído de verdad.                                                                                                                                          |
+| **Cuaderno de errores**           | Cada fallo se guarda con tu respuesta, la correcta y la explicación gramatical.                                                                                                                                                                                  |
+| **Estadísticas**                  | Racha actual y récord, precisión por tipo de actividad, actividad de los últimos 14 días y mapa de la ruta.                                                                                                                                                      |
+| **Teoría A0 → B1**                | Manual integrado; cada día enlaza con su sección.                                                                                                                                                                                                                |
+| **Vocabulario y frases**          | Unos 700 conceptos con buscador y 1.200 frases en tres niveles, con audio y botón para añadirlos al repaso.                                                                                                                                                      |
+| **Laboratorio de canciones**      | Pegas un fragmento y se marcan pronombres, verbos, conectores y contracciones, y se detecta el estribillo.                                                                                                                                                       |
+| **Diccionario y ejemplos reales** | Free Dictionary API (definición, fonética y audio nativo) y Tatoeba (frases reales con traducción).                                                                                                                                                              |
+| **PWA**                           | Instalable y usable sin conexión (excepto diccionario y reconocimiento de voz). Modo oscuro, diseño responsive y accesible con teclado.                                                                                                                          |
 
 <table>
+  <tr>
+    <td><img src="docs/screenshots/sesion.png" alt="Sesión guiada: calentamiento con test de repaso"></td>
+    <td><img src="docs/screenshots/examen.png" alt="Examen semanal"></td>
+  </tr>
   <tr>
     <td><img src="docs/screenshots/actividades.png" alt="Ejercicios de corrección de errores con feedback"></td>
     <td><img src="docs/screenshots/repaso.png" alt="Tarjeta de repaso espaciado"></td>
@@ -63,6 +72,8 @@ flowchart LR
     Review[ReviewPage]
     Pron[PronunciationPage]
     Stats[StatsPage]
+    Session[SessionPage]
+    Exam[ExamPage]
   end
   subgraph Store["src/store · Zustand + persist"]
     P[(progress<br/>localStorage)]
@@ -73,6 +84,8 @@ flowchart LR
     Txt[text.ts<br/>normalización · Levenshtein]
     PronD[pronunciation.ts<br/>alineación DP]
     St[stats.ts]
+    Quiz[quiz.ts<br/>test diario · exámenes]
+    Sess[session.ts<br/>plan de la sesión]
   end
   Data[(src/data<br/>31 días · errores · diálogos · teoría)]
 
@@ -84,6 +97,11 @@ flowchart LR
   Pron --> PronD --> Txt
   Stats --> St
   Gen --> Txt
+  Session --> Sess
+  Session --> Quiz
+  Exam --> Quiz
+  Quiz -- answerReview · recordExam --> P
+  Quiz --> SRS
 ```
 
 ```text
@@ -108,13 +126,15 @@ La regla principal es que **el dominio no conoce React**. Los componentes solo o
 - **Contenido como datos validados por tests.** `data.test.ts` comprueba que hay 31 días con 15 conceptos distintos, que cada frase de ejemplo contiene su concepto, que ningún día repite el vocabulario de otro y que ninguna pregunta tiene opciones duplicadas.
 - **Sin `innerHTML`.** La teoría usa un mini-marcado (`**negrita**`, `*cursiva*`) que se convierte en nodos de React, sin riesgo de XSS.
 - **Rendimiento.** Cada pantalla se carga bajo demanda con `React.lazy` y los ejercicios de cada día se memorizan. El bundle inicial pesa unos 95 kB en gzip.
+- **Tests y exámenes deterministas.** El test diario usa como semilla la fecha y los exámenes el número de intento: el mismo test es reproducible (útil para depurar y testear), pero cada día y cada intento traen preguntas distintas.
+- **Migraciones del estado guardado.** El store está versionado (`STORE_VERSION`) y `migrateProgress` actualiza los datos antiguos sin perder el progreso. Está cubierto por tests.
 - **HashRouter** para que el despliegue en GitHub Pages funcione sin configurar el servidor.
 - **Accesibilidad.** HTML semántico, roles ARIA en pestañas y feedback, `lang="en"` en el texto inglés (los lectores de pantalla lo pronuncian bien), foco visible, enlace para saltar al contenido, `prefers-reduced-motion` y linting con `eslint-plugin-jsx-a11y`.
 
 ## Calidad
 
 ```bash
-npm test            # 112 tests (Vitest + Testing Library)
+npm test            # 140 tests (Vitest + Testing Library)
 npm run coverage    # ~98 % de líneas en src/domain
 npm run lint        # ESLint (typescript-eslint, react-hooks, jsx-a11y)
 npm run typecheck   # TypeScript estricto con noUncheckedIndexedAccess
@@ -150,11 +170,11 @@ La versión inicial era HTML, CSS y JavaScript minificados en una sola línea po
 - Corrige que en "Escucha activa" las tres opciones **podían ser idénticas**: ahora se usan pares mínimos.
 - Sustituye distractores triviales por errores plausibles escritos a mano.
 - Añade la persistencia del progreso (antes se perdía al recargar), el repaso espaciado, la pronunciación, las estadísticas, la PWA, el modo oscuro, los tests y el CI/CD.
+- Añade la sesión guiada diaria, el test de repaso de días anteriores y los exámenes semanales, para que el plan de 30 días sea fácil de seguir. El progreso guardado se migra solo de la versión 1 a la 2.
 
 ## Hoja de ruta
 
 - [ ] Backend opcional (Spring Boot + PostgreSQL) para sincronizar el progreso entre dispositivos.
-- [ ] Diagnóstico inicial para empezar en el día adecuado.
 - [ ] Corrección de textos libres con un modelo de lenguaje.
 - [ ] Tests end-to-end con Playwright.
 
