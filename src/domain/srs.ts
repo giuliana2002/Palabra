@@ -20,6 +20,8 @@ export interface ReviewCard {
   ease: number;
   due: DayKey;
   lapses: number;
+  /** Último día en que se repasó (evita repetir la misma palabra dos veces el mismo día). */
+  lastReview?: DayKey;
 }
 
 /** 0–5 según SM-2. En la interfaz se usan 1 (otra vez), 3 (difícil), 4 (bien) y 5 (fácil). */
@@ -29,6 +31,11 @@ export const MIN_EASE = 1.3;
 export const INITIAL_EASE = 2.5;
 /** Variante tomada de Anki: si una tarjeta nueva es "fácil", no hace falta verla mañana. */
 export const EASY_FIRST_INTERVAL = 4;
+
+/** Clave de una tarjeta: la expresión inglesa en minúsculas (una tarjeta por expresión). */
+export function cardKey(en: string): string {
+  return en.trim().toLowerCase();
+}
 
 export function createCard(
   data: Pick<ReviewCard, 'id' | 'front' | 'back' | 'example'>,
@@ -51,6 +58,7 @@ export function reviewCard(card: ReviewCard, quality: Quality, today: DayKey): R
       interval: 1,
       due: addDays(today, 1),
       lapses: card.lapses + 1,
+      lastReview: today,
     };
   }
 
@@ -63,7 +71,7 @@ export function reviewCard(card: ReviewCard, quality: Quality, today: DayKey): R
       : repetitions === 2
         ? 6
         : Math.round(card.interval * card.ease);
-  return { ...card, ease, repetitions, interval, due: addDays(today, interval) };
+  return { ...card, ease, repetitions, interval, due: addDays(today, interval), lastReview: today };
 }
 
 export function isDue(card: ReviewCard, today: DayKey): boolean {
