@@ -1,5 +1,12 @@
 import { beforeEach, describe, expect, it } from 'vitest';
-import { exportBackup, initialData, parseBackup, useProgress, type RecordInput } from './progress';
+import {
+  exportBackup,
+  initialData,
+  migrateProgress,
+  parseBackup,
+  useProgress,
+  type RecordInput,
+} from './progress';
 
 const concept = { en: 'travel', es: 'viajar', example: 'I travel a lot.' };
 const answer = (overrides: Partial<RecordInput> = {}): RecordInput => ({
@@ -74,5 +81,76 @@ describe('copias de seguridad', () => {
     const parsed = parseBackup({ app: 'palabra', data: { currentDay: 99 } });
     expect(parsed.currentDay).toBe(0);
     expect(parsed.settings.rate).toBe(0.9);
+  });
+});
+
+describe('test de repaso, exámenes y sesión (v2)', () => {
+  beforeEach(() => useProgress.setState(initialData()));
+
+  it('un acierto en el test de repaso aleja la tarjeta; un fallo la trae mañana', () => {
+    const { answerReview } = useProgress.getState();
+    answerReview(concept, true, '2026-05-01');
+    expect(useProgress.getState().cards.travel).toMatchObject({
+      repetitions: 1,
+      due: '2026-05-02',
+    });
+    answerReview(concept, true, '2026-05-02');
+    expect(useProgress.getState().cards.travel).toMatchObject({
+      repetitions: 2,
+      due: '2026-05-08',
+    });
+    answerReview(concept, false, '2026-05-08');
+    expect(useProgress.getState().cards.travel).toMatchObject({
+      repetitions: 0,
+      lapses: 1,
+      due: '2026-05-09',
+    });
+  });
+
+  it('guarda la mejor nota del examen y manda las palabras falladas al repaso de hoy', () => {
+    const { recordExam } = useProgress.getState();
+    recordExam('semana-1', 80, true, [concept], '2026-05-01');
+    recordExam('semana-1', 55, false, [], '2026-05-02');
+    const state = useProgress.getState();
+    expect(state.exams['semana-1']).toMatchObject({
+      best: 80,
+      last: 55,
+      attempts: 2,
+      passed: true,
+    });
+    expect(state.cards.travel?.due).toBe('2026-05-01');
+  });
+
+  it('completar la sesión guarda el resumen y avanza al día siguiente (sin pasar del 30)', () => {
+    const { completeSession } = useProgress.getState();
+    completeSession({ day: 0, correct: 20, total: 25, minutes: 24 }, '2026-05-01');
+    expect(useProgress.getState()).toMatchObject({
+      currentDay: 1,
+      sessions: { '2026-05-01': { correct: 20 } },
+    });
+    useProgress.setState({ currentDay: 30 });
+    completeSession({ day: 30, correct: 1, total: 1, minutes: 1 }, '2026-05-02');
+    expect(useProgress.getState().currentDay).toBe(30);
+  });
+});
+
+describe('migraciones', () => {
+  it('v1 → v2 conserva el progreso y añade sesiones y exámenes', () => {
+    const v1 = {
+      currentDay: 5,
+      results: { a: { ok: true } },
+      cards: {},
+      mistakes: [],
+      activity: { '2026-01-01': 3 },
+      settings: { theme: 'dark' },
+    };
+    const migrated = migrateProgress(v1, 1);
+    expect(migrated).toMatchObject({
+      currentDay: 5,
+      activity: { '2026-01-01': 3 },
+      sessions: {},
+      exams: {},
+    });
+    expect(migrated.settings).toMatchObject({ theme: 'dark', rate: 0.9 });
   });
 });
