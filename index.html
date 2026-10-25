@@ -15,6 +15,21 @@
   <body>
     <div id="root"></div>
     <noscript>Palabra necesita JavaScript para funcionar.</noscript>
+    <script>
+      // Si se abre este archivo de desarrollo con doble clic, el navegador no puede cargar
+      // el código fuente. Se explica cómo abrir la app en lugar de dejar la página en blanco.
+      setTimeout(function () {
+        var root = document.getElementById('root');
+        if (location.protocol !== 'file:' || !root || root.childElementCount) return;
+        root.innerHTML =
+          '<div style="max-width:560px;margin:15vh auto;padding:0 20px;font:16px/1.6 system-ui,sans-serif;color:#102834">' +
+          '<h1 style="font-family:Georgia,serif">palabra<span style="color:#9bbf3a">·</span></h1>' +
+          '<p>Este <code>index.html</code> es la página de desarrollo y no se puede abrir con doble clic.</p>' +
+          '<ul><li>Para usarla con doble clic: ejecuta <code>npm run build:standalone</code> y abre <strong>dist-standalone/index.html</strong>.</li>' +
+          '<li>Para desarrollar, ejecuta <code>npm install</code> y <code>npm run dev</code>.</li>' +
+          '<li>O abre la demo publicada en GitHub Pages.</li></ul></div>';
+      }, 1200);
+    </script>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>

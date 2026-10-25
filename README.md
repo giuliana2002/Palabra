@@ -153,6 +153,14 @@ npm install
 npm run dev        # http://localhost:5173
 ```
 
+**Sin instalar nada (doble clic):**
+
+```bash
+npm run build:standalone   # genera dist-standalone/index.html, un único archivo con todo dentro
+```
+
+Ese archivo se abre directamente en el navegador, sin servidor, y se puede enviar o copiar a cualquier ordenador. El `index.html` de la raíz es la página de desarrollo: solo funciona con `npm run dev`.
+
 > El reconocimiento de voz funciona en Chrome, Edge y Safari. En Firefox la página de pronunciación ofrece el modo de escucha y repetición.
 
 ## Despliegue
